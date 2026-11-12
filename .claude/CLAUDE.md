@@ -16,6 +16,7 @@ field animates behind it. xomware.com stays the hub for the apps; this site link
 npm run dev      # dev server (127.0.0.1:5173)
 npm run check    # type check
 npm run build    # check + production build to dist/
+npm test         # Playwright smoke tests against a built preview
 ```
 
 ## Important Paths
@@ -33,6 +34,7 @@ pm_tool: none
 base_branch: master
 test_commands:
   - npm run check
+  - npm test
 build_commands:
   - npm run build
 ```
