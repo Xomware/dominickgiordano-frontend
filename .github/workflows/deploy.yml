@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    uses: Xomware/github-actions/.github/workflows/deploy-frontend-s3.yml@v1
+    with:
+      app: dominickgiordano
+      node-version: '22'
+      build-command: npm run build
+      dist-dir: dist
+      bucket: dominickgiordano.com
+      domain: dominickgiordano.com
