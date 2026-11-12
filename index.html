@@ -17,6 +17,41 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="author" content="Dominick Giordano">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://dominickgiordano.com/#website",
+            "url": "https://dominickgiordano.com/",
+            "name": "Dominick Giordano"
+          },
+          {
+            "@type": "Person",
+            "@id": "https://dominickgiordano.com/#person",
+            "name": "Dominick Giordano",
+            "url": "https://dominickgiordano.com/",
+            "image": "https://dominickgiordano.com/dominick-giordano.jpg",
+            "jobTitle": "Senior Software Engineer",
+            "worksFor": [
+              { "@type": "Organization", "name": "Lumist Labs", "url": "https://lumistlabs.ai" },
+              { "@type": "Organization", "name": "Areté Partners", "url": "https://aretepartners.com" }
+            ],
+            "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of North Carolina at Chapel Hill" },
+            "address": { "@type": "PostalAddress", "addressLocality": "Charlotte", "addressRegion": "NC", "addressCountry": "US" },
+            "knowsAbout": ["Software engineering", "Applied AI", "AWS", "Terraform", "Angular", "SwiftUI", "Python"],
+            "sameAs": [
+              "https://www.linkedin.com/in/dominick-giordano/",
+              "https://github.com/domgiordano",
+              "https://github.com/DominickGiordano",
+              "https://xomware.com"
+            ]
+          }
+        ]
+      }
+    </script>
     <script>
       document.documentElement.dataset.look = localStorage.getItem('look') || 'dark';
       if (!sessionStorage.getItem('intro-seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -91,7 +126,7 @@
           <h2 class="h" data-in data-scramble>About</h2>
           <div class="about">
             <figure class="display">
-              <div class="scr"><img src="/src/assets/photo.jpg" alt="Dominick Giordano" width="460" height="460"><span class="scr-mark" aria-hidden="true"></span></div>
+              <div class="scr"><img src="/dominick-giordano.jpg" alt="Dominick Giordano" width="460" height="460"><span class="scr-mark" aria-hidden="true"></span></div>
               <figcaption class="meta"><span>Display</span><span>Hover for the photo</span></figcaption>
             </figure>
             <div>
