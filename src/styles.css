@@ -345,6 +345,24 @@ a.pin:hover {
 }
 
 /* ---------- layout ---------- */
+#field {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
+.band {
+  min-height: 42vh;
+}
+
+.contact-t {
+  max-width: 720px;
+}
+
 main {
   position: relative;
   z-index: 1;
