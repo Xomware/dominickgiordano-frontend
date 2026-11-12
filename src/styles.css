@@ -240,7 +240,7 @@ html.intro-on main {
   height: 20px;
   flex: none;
   background: var(--fg);
-  mask: url('/dg.svg') center / contain no-repeat;
+  mask: url('./assets/dg.svg') center / contain no-repeat;
 }
 
 .nav {
@@ -674,7 +674,7 @@ main {
   width: 76%;
   aspect-ratio: 11 / 7;
   background: var(--screen-led);
-  mask: url('/dg.svg') center / contain no-repeat;
+  mask: url('./assets/dg.svg') center / contain no-repeat;
 }
 
 .meta {
