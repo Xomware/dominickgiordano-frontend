@@ -1,4 +1,4 @@
-import { bitmap } from './font';
+import { bitmap, glyph } from './font';
 
 // A full-screen dot matrix behind the page. Each section names a pattern with data-pat, and the field blends
 // between the pattern under the middle of the viewport and the next one. Anything marked data-quiet dims the dots
@@ -34,6 +34,16 @@ let sections: { pat: string; top: number }[] = [];
 let quiet: HTMLElement[] = [];
 let heat: Float32Array = new Float32Array(0);
 let mask: Float32Array = new Float32Array(0);
+let noise: Float32Array = new Float32Array(0);
+let intro: {
+  t0: number;
+  text: Int16Array;
+  chars: number;
+  waved: boolean;
+  phase: number;
+  onPhase: (phase: number) => void;
+  done: () => void;
+} | null = null;
 let base = document.createElement('canvas');
 let lit = '';
 let k = 0;
@@ -111,8 +121,78 @@ function measure(): void {
   }));
   quiet = [...document.querySelectorAll<HTMLElement>('[data-quiet]')];
   heat = new Float32Array(cols * rows);
+  noise = Float32Array.from({ length: cols * rows }, Math.random);
   mask = monogram();
+  if (intro) Object.assign(intro, introText());
   paint();
+}
+
+// "HELLO / I'M DOM" in the 5x7 font, scaled so each font pixel is a z-by-z block of dots. Each dot stores the
+// index of the character it belongs to, which sets the typing order; -1 means the dot is not part of the text.
+function introText(): { text: Int16Array; chars: number } {
+  const text = new Int16Array(cols * rows).fill(-1);
+  const fit = (lines: string[]) => Math.min(3, Math.floor((cols * 0.86) / Math.max(...lines.map((s) => s.length * 6 - 1))));
+  let lines = ['HELLO', "I'M DOM"];
+  let z = fit(lines);
+  if (z < 1) {
+    lines = ['HELLO', "I'M", 'DOM'];
+    z = Math.max(1, fit(lines));
+  }
+  // Each line is 7 font rows plus a 3-row gap, minus the gap after the last line.
+  let r0 = Math.floor((rows - (lines.length * 10 - 3) * z) / 2);
+  let chars = 0;
+  for (const line of lines) {
+    const c0 = Math.floor((cols - (line.length * 6 - 1) * z) / 2);
+    [...line].forEach((ch, k) => {
+      glyph(ch).forEach((bits, gr) => {
+        for (let gc = 0; gc < 5; gc++) {
+          if (!((bits >> (4 - gc)) & 1)) continue;
+          for (let dy = 0; dy < z; dy++) {
+            for (let dx = 0; dx < z; dx++) {
+              const r = r0 + gr * z + dy;
+              const c = c0 + (k * 6 + gc) * z + dx;
+              if (r >= 0 && r < rows && c >= 0 && c < cols) text[r * cols + c] = chars;
+            }
+          }
+        }
+      });
+      chars++;
+    });
+    r0 += 10 * z;
+  }
+  return { text, chars };
+}
+
+// Boot: a scan line sweeps down and leaves sparse sparkle. Type: the text lights one character at a time.
+// Resolve: the text dissolves dot by dot while the monogram fills in behind a shockwave.
+function introValue(i: number, y: number, it: number, text: Int16Array, chars: number): number {
+  const n = noise[i];
+  if (it < 1) {
+    const d = it * (H + 80) - y;
+    if (d < 0) return 0;
+    return (d < 44 ? (1 - d / 44) * 0.95 : 0) + (n < 0.05 ? 0.35 : 0);
+  }
+  const ch = text[i];
+  if (it < 2.6) {
+    const typed = ((it - 1) / 1.3) * chars;
+    if (ch < 0 || ch >= typed) return n < 0.012 ? 0.3 : 0;
+    return typed - ch < 1 && n < 0.5 ? 0.5 : 1;
+  }
+  const p = clamp((it - 2.6) / 0.9, 0, 1);
+  return (ch >= 0 && n > p ? 1 : 0) + (n < p ? mask[i] : 0);
+}
+
+export function playIntro(onPhase: (phase: number) => void): Promise<void> {
+  return new Promise((done) => {
+    heat.fill(0);
+    intro = { t0: performance.now() / 1000, ...introText(), waved: false, phase: -1, onPhase, done };
+  });
+}
+
+export function endIntro(): void {
+  const finished = intro;
+  intro = null;
+  finished?.done();
 }
 
 function pattern(p: string, c: number, r: number, x: number, y: number, t: number, i: number): number {
@@ -154,15 +234,33 @@ function frame(now: number): void {
   k += (where() - k) * 0.07;
   if (!reduced.matches) tick += (11 + Math.min(180, Math.abs(dy) * 1.5)) * dt;
 
+  const playing = intro;
+  const it = playing ? sec - playing.t0 : 0;
+  if (playing) {
+    const phase = it < 1 ? 0 : it < 2.6 ? 1 : 2;
+    if (phase !== playing.phase) {
+      playing.phase = phase;
+      playing.onPhase(phase);
+    }
+    if (!playing.waved && it >= 2.6) {
+      playing.waved = true;
+      clicks.push({ x: W / 2, y: H / 2 + scrollY, t: sec });
+    }
+    if (it > 3.6) endIntro();
+  }
+
   const i0 = Math.floor(k);
   const f = k - i0;
   const a = sections[i0]?.pat ?? 'mono';
   const b = sections[i0 + 1]?.pat ?? a;
   const w = smooth(0.45, 1, f);
-  const zones = quiet
-    .map((el) => ({ r: el.getBoundingClientRect(), f: Number(el.dataset.quiet) }))
-    .filter(({ r }) => r.bottom > 0 && r.top < H);
-  const g = glow?.isConnected ? glow.getBoundingClientRect() : null;
+  // The page is hidden during the intro, so its quiet zones and hover halos don't apply.
+  const zones = playing
+    ? []
+    : quiet
+        .map((el) => ({ r: el.getBoundingClientRect(), f: Number(el.dataset.quiet) }))
+        .filter(({ r }) => r.bottom > 0 && r.top < H);
+  const g = !playing && glow?.isConnected ? glow.getBoundingClientRect() : null;
   const live = clicks.filter((p) => sec - p.t < 1.6);
 
   const N = 7;
@@ -176,8 +274,12 @@ function frame(now: number): void {
     for (let c = 0; c < cols; c++) {
       const x = c * sp + o;
       const i = r * cols + c;
-      let v = w < 1 ? pattern(a, c, r, x, y, t, i) * (1 - w) : 0;
-      if (w > 0) v += pattern(b, c, r, x, y, t, i) * w;
+      let v = 0;
+      if (playing) v = introValue(i, y, it, playing.text, playing.chars);
+      else {
+        if (w < 1) v += pattern(a, c, r, x, y, t, i) * (1 - w);
+        if (w > 0) v += pattern(b, c, r, x, y, t, i) * w;
+      }
       if (pointer.on) {
         const mx = x - pointer.x;
         const my = y - pointer.y;

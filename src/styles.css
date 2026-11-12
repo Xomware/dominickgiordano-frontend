@@ -89,6 +89,118 @@ a {
   }
 }
 
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- intro ---------- */
+.bar,
+.rail,
+main {
+  transition: opacity 0.9s ease;
+}
+
+/* The failsafe reveals the page after 8s if the script never runs to end the intro. */
+html.intro-on .bar,
+html.intro-on .rail,
+html.intro-on main {
+  opacity: 0;
+  pointer-events: none;
+  animation: failsafe 0s 8s forwards;
+}
+
+@keyframes failsafe {
+  to {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.skip {
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  right: max(16px, env(safe-area-inset-right, 0px));
+  pointer-events: auto;
+  appearance: none;
+  font: 500 12px/1 var(--f-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.skip:hover {
+  border-color: var(--fg);
+}
+
+.phases {
+  position: absolute;
+  left: max(20px, env(safe-area-inset-left, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  list-style: none;
+  display: flex;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  font: 500 12px/1 var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.phases li {
+  transition: color 0.3s;
+}
+
+.phases li.on {
+  color: var(--fg);
+}
+
+.icon-btn {
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--dim);
+  font: 500 15px/1 var(--f-mono);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+.linkbtn {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ---------- toolbar ---------- */
 .bar {
   position: sticky;
@@ -501,6 +613,12 @@ main {
   margin-bottom: 9px;
 }
 
+.ticker canvas {
+  display: block;
+  width: 100%;
+  height: 35px;
+}
+
 .ticker-text {
   margin: 0;
   font: 800 22px/35px var(--f-led);
@@ -531,6 +649,25 @@ main {
   overflow: hidden;
   display: grid;
   place-items: center;
+}
+
+.scr canvas,
+.scr img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scr img {
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.scr:hover img {
+  opacity: 1;
 }
 
 .scr-mark {
@@ -641,6 +778,18 @@ main {
   color: var(--dim);
   font-size: 14px;
   line-height: 1.5;
+}
+
+.panel.in .card,
+.panel.in .app {
+  animation: rise 0.55s calc(var(--i) * 70ms) cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0.25;
+    transform: translateY(12px);
+  }
 }
 
 /* ---------- numbers ---------- */
