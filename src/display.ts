@@ -27,7 +27,8 @@ export function startDisplay(scr: HTMLElement): void {
     g.canvas.height = rows;
     g.fillStyle = '#000';
     g.fillRect(0, 0, cols, rows);
-    if (photo?.complete && photo.naturalWidth) {
+    const hasPhoto = Boolean(photo?.complete && photo.naturalWidth);
+    if (photo && hasPhoto) {
       const s = Math.max(cols / photo.naturalWidth, rows / photo.naturalHeight);
       const pw = photo.naturalWidth * s;
       const ph = photo.naturalHeight * s;
@@ -48,6 +49,14 @@ export function startDisplay(scr: HTMLElement): void {
     const data = g.getImageData(0, 0, cols, rows).data;
     lum = new Float32Array(cols * rows);
     for (let i = 0; i < lum.length; i++) lum[i] = (0.2126 * data[i * 4] + 0.7152 * data[i * 4 + 1] + 0.0722 * data[i * 4 + 2]) / 255;
+    if (!hasPhoto) return;
+    // A pale wall behind the headshot would light the whole screen, so the edges fade out and the face stays the subject.
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const d = Math.hypot(c / cols - 0.5, r / rows - 0.45);
+        lum[r * cols + c] *= 1 - Math.min(1, Math.max(0, (d - 0.3) / 0.3));
+      }
+    }
   };
 
   const size = () => {
