@@ -36,6 +36,16 @@ test('reduced motion skips the intro', async ({ page }) => {
   await expect(page.locator('#intro')).toBeHidden();
 });
 
+test('structured data parses and describes Dominick', async ({ page }) => {
+  await page.goto('/');
+  const raw = await page.locator('script[type="application/ld+json"]').textContent();
+  const person = JSON.parse(raw ?? '{}')['@graph'].find((n: { '@type': string }) => n['@type'] === 'Person');
+  expect(person.name).toBe('Dominick Giordano');
+  expect(person.sameAs).toContain('https://www.linkedin.com/in/dominick-giordano/');
+  const photo = await page.request.get(person.image.replace('https://dominickgiordano.com', ''));
+  expect(photo.ok()).toBe(true);
+});
+
 test('the look switch persists across reloads', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
