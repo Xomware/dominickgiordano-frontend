@@ -12,6 +12,7 @@
     <script type="module" src="/src/main.ts"></script>
   </head>
   <body>
+    <canvas id="field" aria-hidden="true"></canvas>
     <header class="bar">
       <div class="bar-in">
         <a class="brand" href="#top"><span class="mark" aria-hidden="true"></span><span>Dominick Giordano</span></a>
@@ -47,8 +48,8 @@
     </nav>
 
     <main>
-      <section class="hero wrap" id="top">
-        <div class="hero-t">
+      <section class="hero wrap" id="top" data-pat="mono">
+        <div class="hero-t" data-quiet="0.12">
           <p class="eyebrow"><span class="led"></span>Senior Software Engineer · Lumist Labs</p>
           <h1 class="name">Dominick<br>Giordano</h1>
           <p class="lede">I build software end to end: web and iOS apps, the APIs behind them, and the AWS they run on.</p>
@@ -65,8 +66,8 @@
         </div>
       </section>
 
-      <section class="wrap sec" id="about">
-        <div class="panel">
+      <section class="wrap sec" id="about" data-pat="ripple">
+        <div class="panel" data-quiet="0.3">
           <h2 class="h">About</h2>
           <div class="about">
             <figure class="display">
@@ -92,48 +93,52 @@
         </div>
       </section>
 
-      <section class="wrap sec" id="work">
-        <div class="panel">
+      <section class="band" data-pat="ticker:lumist" aria-hidden="true"></section>
+
+      <section class="wrap sec" id="work" data-pat="bands">
+        <div class="panel" data-quiet="0.3">
           <h2 class="h">Lumist Labs</h2>
           <p class="sub">Six products I built with my team at Lumist Labs. <span class="ph">What I owned on each, plus a number or two</span></p>
           <div class="grid">
-            <a class="card" style="--i:0" href="https://lumistlabs.ai" target="_blank" rel="noopener"><span class="host">lumistlabs.ai</span><b>Lumist Labs</b><p>Company site. Applied AI for mid-market companies, from strategy to custom software and training.</p></a>
-            <a class="card" style="--i:1" href="https://os.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">os.lumistlabs.ai</span><b>LumiOS</b><p>AI agents and workflows for non-technical teams.</p></a>
-            <a class="card" style="--i:2" href="https://vector.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">vector.lumistlabs.ai</span><b>Vector</b><p>Executive AI-readiness diagnostic.</p></a>
-            <a class="card" style="--i:3" href="https://beacon.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">beacon.lumistlabs.ai</span><b>Beacon</b><p>Signal operations console.</p></a>
-            <a class="card" style="--i:4" href="https://lumilearn.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">lumilearn.lumistlabs.ai</span><b>LumiLearn</b><p><span class="ph">Hands-on AI training platform</span></p></a>
-            <a class="card" style="--i:5" href="https://bd.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">bd.lumistlabs.ai</span><b>BD Pulse</b><p>Internal BD pipeline, activity tracking and leaderboard.</p></a>
+            <a class="card" data-glowstyle="--i:0" href="https://lumistlabs.ai" target="_blank" rel="noopener"><span class="host">lumistlabs.ai</span><b>Lumist Labs</b><p>Company site. Applied AI for mid-market companies, from strategy to custom software and training.</p></a>
+            <a class="card" data-glowstyle="--i:1" href="https://os.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">os.lumistlabs.ai</span><b>LumiOS</b><p>AI agents and workflows for non-technical teams.</p></a>
+            <a class="card" data-glowstyle="--i:2" href="https://vector.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">vector.lumistlabs.ai</span><b>Vector</b><p>Executive AI-readiness diagnostic.</p></a>
+            <a class="card" data-glowstyle="--i:3" href="https://beacon.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">beacon.lumistlabs.ai</span><b>Beacon</b><p>Signal operations console.</p></a>
+            <a class="card" data-glowstyle="--i:4" href="https://lumilearn.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">lumilearn.lumistlabs.ai</span><b>LumiLearn</b><p><span class="ph">Hands-on AI training platform</span></p></a>
+            <a class="card" data-glowstyle="--i:5" href="https://bd.lumistlabs.ai" target="_blank" rel="noopener"><span class="host">bd.lumistlabs.ai</span><b>BD Pulse</b><p>Internal BD pipeline, activity tracking and leaderboard.</p></a>
           </div>
         </div>
       </section>
 
-      <section class="wrap sec numbers" aria-label="By the numbers">
-        <div class="stats">
+      <section class="wrap sec numbers" aria-label="By the numbers" data-pat="bars">
+        <div class="stats" data-quiet="0.55">
           <div class="stat"><div class="n">6</div><div class="l">Lumist Labs products shipped with my team</div></div>
           <div class="stat"><div class="n">12+</div><div class="l">personal apps live under Xomware</div></div>
           <div class="stat"><div class="n">2</div><div class="l">native iOS apps in TestFlight</div></div>
         </div>
       </section>
 
-      <section class="wrap sec" id="apps">
-        <div class="panel">
+      <section class="band" data-pat="ticker:apps" aria-hidden="true"></section>
+
+      <section class="wrap sec" id="apps" data-pat="ripple">
+        <div class="panel" data-quiet="0.3">
           <h2 class="h">Xomware</h2>
           <p class="sub">Apps I build and run on my own time, from idea to App Store. <a href="https://xomware.com" target="_blank" rel="noopener">Full directory at xomware.com ↗</a></p>
           <div class="grid">
-            <a class="app" style="--i:0" href="https://xomify.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomify.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web + iOS</small><b>Xomify</b><span>Spotify stats, wrapped your way. Top songs, artists and genres.</span></span></a>
-            <a class="app" style="--i:1" href="https://xomper.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomper.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>Xomper</b><span>Fantasy football analytics for dynasty leagues.</span></span></a>
-            <a class="app" style="--i:2" href="https://testflight.apple.com/join/xttcUQwT" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomfit.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>iOS</small><b>XomFit</b><span>Social lifting tracker with AI workout plans.</span></span></a>
-            <a class="app" style="--i:3" href="https://xomcloud.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomcloud.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>XomCloud</b><span>Your SoundCloud library, organized.</span></span></a>
-            <a class="app" style="--i:4" href="https://xomappetit.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomappetit.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>Xom Appétit</b><span>Home-cooking tracker with recipes, ingredients and macros.</span></span></a>
-            <a class="app" style="--i:5" href="https://xomforms.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomforms.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>Xom Forms</b><span>Group availability scheduler. Paint your free time, see the best slot.</span></span></a>
-            <a class="app" style="--i:6" href="https://armchairjudge.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/armchair-judge.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>Armchair Judge</b><span>Score TV competitions blind, then compare with the panel.</span></span></a>
-            <a class="app" style="--i:7" href="https://clt.dynasty.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/clt-dynasty.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>CLT Dynasty</b><span>A dynasty league’s home: live scores, playoffs and AI recaps.</span></span></a>
+            <a class="app" data-glowstyle="--i:0" href="https://xomify.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomify.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web + iOS</small><b>Xomify</b><span>Spotify stats, wrapped your way. Top songs, artists and genres.</span></span></a>
+            <a class="app" data-glowstyle="--i:1" href="https://xomper.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomper.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>Xomper</b><span>Fantasy football analytics for dynasty leagues.</span></span></a>
+            <a class="app" data-glowstyle="--i:2" href="https://testflight.apple.com/join/xttcUQwT" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomfit.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>iOS</small><b>XomFit</b><span>Social lifting tracker with AI workout plans.</span></span></a>
+            <a class="app" data-glowstyle="--i:3" href="https://xomcloud.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomcloud.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>XomCloud</b><span>Your SoundCloud library, organized.</span></span></a>
+            <a class="app" data-glowstyle="--i:4" href="https://xomappetit.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomappetit.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>Xom Appétit</b><span>Home-cooking tracker with recipes, ingredients and macros.</span></span></a>
+            <a class="app" data-glowstyle="--i:5" href="https://xomforms.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/xomforms.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>Xom Forms</b><span>Group availability scheduler. Paint your free time, see the best slot.</span></span></a>
+            <a class="app" data-glowstyle="--i:6" href="https://armchairjudge.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/armchair-judge.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>Armchair Judge</b><span>Score TV competitions blind, then compare with the panel.</span></span></a>
+            <a class="app" data-glowstyle="--i:7" href="https://clt.dynasty.xomware.com" target="_blank" rel="noopener"><span class="sock"><img src="/icons/clt-dynasty.webp" alt="" width="46" height="46" loading="lazy"></span><span class="app-t"><small>Web</small><b>CLT Dynasty</b><span>A dynasty league’s home: live scores, playoffs and AI recaps.</span></span></a>
           </div>
         </div>
       </section>
 
-      <section class="wrap sec" id="experience">
-        <div class="panel two">
+      <section class="wrap sec" id="experience" data-pat="bands">
+        <div class="panel two" data-quiet="0.3">
           <div>
             <h2 class="h">Experience</h2>
             <ul class="list">
@@ -153,7 +158,8 @@
         </div>
       </section>
 
-      <section class="wrap sec" id="contact">
+      <section class="wrap sec" id="contact" data-pat="mono">
+        <div class="contact-t" data-quiet="0.2">
         <h2 class="big">Let's talk</h2>
         <div class="cta">
           <a class="btn primary" href="https://www.linkedin.com/in/dominick-giordano/" target="_blank" rel="noopener">LinkedIn</a>
@@ -162,6 +168,7 @@
           <span class="btn is-ph">Résumé PDF</span>
         </div>
         <footer class="foot"><span>© 2026 Dominick Giordano · dominickgiordano.com</span></footer>
+        </div>
       </section>
     </main>
   </body>
