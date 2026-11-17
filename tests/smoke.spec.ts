@@ -13,6 +13,13 @@ test('intro plays on first visit and the skip button hands the page back', async
   expect(errors).toEqual([]);
 });
 
+test('the intro unlocks, then hands the page back on its own', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.phases li.on')).toHaveText('02 Unlocked', { timeout: 5000 });
+  await expect(page.locator('html')).not.toHaveClass(/intro-on/, { timeout: 5000 });
+  await expect(page.locator('#intro')).toBeHidden();
+});
+
 test('the intro plays once per session', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Skip intro' }).click();

@@ -1,4 +1,5 @@
-import { bitmap, glyph } from './font';
+import { type Board, INTRO_END, OFF, UNLOCK, drawBoard, layoutBoard, lockCenter, panelsCenter, phaseAt } from './board';
+import { bitmap } from './font';
 
 // A full-screen dot matrix behind the page. Each section names a pattern with data-pat, and the field blends
 // between the pattern under the middle of the viewport and the next one. Anything marked data-quiet dims the dots
@@ -19,7 +20,8 @@ const smooth = (lo: number, hi: number, x: number) => {
 const token = (name: string) => getComputedStyle(root).getPropertyValue(name).trim();
 
 const pointer = { x: 0, y: 0, on: false };
-const clicks: { x: number; y: number; t: number }[] = [];
+// `k` scales a shockwave; the unlock's is a small one.
+const clicks: { x: number; y: number; t: number; k?: number }[] = [];
 let glow: Element | null = null;
 
 let canvas: HTMLCanvasElement;
@@ -35,11 +37,11 @@ let quiet: HTMLElement[] = [];
 let heat: Float32Array = new Float32Array(0);
 let mask: Float32Array = new Float32Array(0);
 let noise: Float32Array = new Float32Array(0);
+let board: Board | null = null;
 let intro: {
   t0: number;
-  text: Int16Array;
-  chars: number;
-  waved: boolean;
+  unlocked: boolean;
+  closed: boolean;
   phase: number;
   onPhase: (phase: number) => void;
   done: () => void;
@@ -123,69 +125,28 @@ function measure(): void {
   heat = new Float32Array(cols * rows);
   noise = Float32Array.from({ length: cols * rows }, Math.random);
   mask = monogram();
-  if (intro) Object.assign(intro, introText());
+  board = layoutBoard(W, H);
   paint();
 }
 
-// "HELLO / I'M DOM" in the 5x7 font, scaled so each font pixel is a z-by-z block of dots. Each dot stores the
-// index of the character it belongs to, which sets the typing order; -1 means the dot is not part of the text.
-function introText(): { text: Int16Array; chars: number } {
-  const text = new Int16Array(cols * rows).fill(-1);
-  const fit = (lines: string[]) => Math.min(3, Math.floor((cols * 0.86) / Math.max(...lines.map((s) => s.length * 6 - 1))));
-  let lines = ['HELLO', "I'M DOM"];
-  let z = fit(lines);
-  if (z < 1) {
-    lines = ['HELLO', "I'M", 'DOM'];
-    z = Math.max(1, fit(lines));
-  }
-  // Each line is 7 font rows plus a 3-row gap, minus the gap after the last line.
-  let r0 = Math.floor((rows - (lines.length * 10 - 3) * z) / 2);
-  let chars = 0;
-  for (const line of lines) {
-    const c0 = Math.floor((cols - (line.length * 6 - 1) * z) / 2);
-    [...line].forEach((ch, k) => {
-      glyph(ch).forEach((bits, gr) => {
-        for (let gc = 0; gc < 5; gc++) {
-          if (!((bits >> (4 - gc)) & 1)) continue;
-          for (let dy = 0; dy < z; dy++) {
-            for (let dx = 0; dx < z; dx++) {
-              const r = r0 + gr * z + dy;
-              const c = c0 + (k * 6 + gc) * z + dx;
-              if (r >= 0 && r < rows && c >= 0 && c < cols) text[r * cols + c] = chars;
-            }
-          }
-        }
-      });
-      chars++;
-    });
-    r0 += 10 * z;
-  }
-  return { text, chars };
-}
-
-// Boot: a scan line sweeps down and leaves sparse sparkle. Type: the text lights one character at a time.
-// Resolve: the text dissolves dot by dot while the monogram fills in behind a shockwave.
-function introValue(i: number, y: number, it: number, text: Int16Array, chars: number): number {
+// Boot: a scan line sweeps down and leaves sparse sparkle while the board runs (src/board.ts). Resolve: once the
+// board has switched off, the monogram dissolves in behind a shockwave.
+function introValue(i: number, y: number, it: number): number {
   const n = noise[i];
-  if (it < 1) {
-    const d = it * (H + 80) - y;
+  if (it < 0.6) {
+    const d = (it / 0.6) * (H + 80) - y;
     if (d < 0) return 0;
-    return (d < 44 ? (1 - d / 44) * 0.95 : 0) + (n < 0.05 ? 0.35 : 0);
+    return (d < 44 ? (1 - d / 44) * 0.95 : 0) + (n < 0.04 ? 0.3 : 0);
   }
-  const ch = text[i];
-  if (it < 2.6) {
-    const typed = ((it - 1) / 1.3) * chars;
-    if (ch < 0 || ch >= typed) return n < 0.012 ? 0.3 : 0;
-    return typed - ch < 1 && n < 0.5 ? 0.5 : 1;
-  }
-  const p = clamp((it - 2.6) / 0.9, 0, 1);
-  return (ch >= 0 && n > p ? 1 : 0) + (n < p ? mask[i] : 0);
+  if (it < OFF) return n < 0.012 ? 0.3 : 0;
+  const p = clamp((it - OFF) / 0.6, 0, 1);
+  return n < p ? mask[i] : 0;
 }
 
 export function playIntro(onPhase: (phase: number) => void): Promise<void> {
   return new Promise((done) => {
     heat.fill(0);
-    intro = { t0: performance.now() / 1000, ...introText(), waved: false, phase: -1, onPhase, done };
+    intro = { t0: performance.now() / 1000, unlocked: false, closed: false, phase: -1, onPhase, done };
   });
 }
 
@@ -236,17 +197,23 @@ function frame(now: number): void {
 
   const playing = intro;
   const it = playing ? sec - playing.t0 : 0;
-  if (playing) {
-    const phase = it < 1 ? 0 : it < 2.6 ? 1 : 2;
+  if (playing && board) {
+    const phase = phaseAt(it);
     if (phase !== playing.phase) {
       playing.phase = phase;
       playing.onPhase(phase);
     }
-    if (!playing.waved && it >= 2.6) {
-      playing.waved = true;
-      clicks.push({ x: W / 2, y: H / 2 + scrollY, t: sec });
+    if (!playing.unlocked && it >= UNLOCK) {
+      playing.unlocked = true;
+      const l = lockCenter(board);
+      clicks.push({ x: l.x, y: l.y + scrollY, t: sec, k: 0.45 });
     }
-    if (it > 3.6) endIntro();
+    if (!playing.closed && it >= OFF) {
+      playing.closed = true;
+      const c = panelsCenter(board);
+      clicks.push({ x: c.x, y: c.y + scrollY, t: sec });
+    }
+    if (it > INTRO_END) endIntro();
   }
 
   const i0 = Math.floor(k);
@@ -275,7 +242,7 @@ function frame(now: number): void {
       const x = c * sp + o;
       const i = r * cols + c;
       let v = 0;
-      if (playing) v = introValue(i, y, it, playing.text, playing.chars);
+      if (playing) v = introValue(i, y, it);
       else {
         if (w < 1) v += pattern(a, c, r, x, y, t, i) * (1 - w);
         if (w > 0) v += pattern(b, c, r, x, y, t, i) * w;
@@ -288,7 +255,7 @@ function frame(now: number): void {
       for (const p of live) {
         const age = sec - p.t;
         const e = Math.abs(Math.hypot(x - p.x, y - (p.y - scrollY)) - age * 620);
-        if (e < 26) v += (1 - e / 26) * (1 - age / 1.6);
+        if (e < 26) v += (1 - e / 26) * (1 - age / 1.6) * (p.k ?? 1);
       }
       if (g) {
         const ex = Math.max(g.left - x, 0, x - g.right);
@@ -316,6 +283,7 @@ function frame(now: number): void {
     ctx.fill(p);
   });
   ctx.globalAlpha = 1;
+  if (playing && board) drawBoard(ctx, board, it, sec);
   requestAnimationFrame(frame);
 }
 

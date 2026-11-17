@@ -13,6 +13,7 @@
   --screen: #060607;
   --screen-led: #f4f3ef;
   --screen-line: #2a2a2f;
+  --screen-cell: #121215;
   --screen-dim: #7d7d84;
   --f-body: 'Geist', system-ui, sans-serif;
   --f-mono: 'Geist Mono', ui-monospace, monospace;
@@ -140,10 +141,12 @@ html.intro-on main {
 .phases {
   position: absolute;
   left: max(20px, env(safe-area-inset-left, 0px));
+  right: max(20px, env(safe-area-inset-right, 0px));
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   list-style: none;
   display: flex;
-  gap: 18px;
+  flex-wrap: wrap;
+  gap: 10px 18px;
   margin: 0;
   padding: 0;
   font: 500 12px/1 var(--f-mono);
