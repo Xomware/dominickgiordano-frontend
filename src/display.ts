@@ -1,3 +1,5 @@
+import { MARK_ASPECT, drawMark } from './mark';
+
 // The About screen: a photo (the <img> inside .scr, once there is one) or the DG monogram, drawn as an LED
 // halftone. Hovering the screen fades the real photo in over it (CSS).
 
@@ -34,17 +36,7 @@ export function startDisplay(scr: HTMLElement): void {
       const ph = photo.naturalHeight * s;
       g.drawImage(photo, (cols - pw) / 2, (rows - ph) / 2, pw, ph);
     } else {
-      let px = rows * 0.46;
-      g.font = `800 ${px}px Geist, system-ui, sans-serif`;
-      const tw = g.measureText('DG').width;
-      if (tw > cols * 0.8) {
-        px *= (cols * 0.8) / tw;
-        g.font = `800 ${px}px Geist, system-ui, sans-serif`;
-      }
-      g.fillStyle = '#fff';
-      g.textAlign = 'center';
-      g.textBaseline = 'middle';
-      g.fillText('DG', cols / 2, rows * 0.47);
+      drawMark(g, cols / 2, rows * 0.47, Math.min(cols * 0.8, rows * 0.32 * MARK_ASPECT));
     }
     const data = g.getImageData(0, 0, cols, rows).data;
     lum = new Float32Array(cols * rows);
