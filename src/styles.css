@@ -225,10 +225,10 @@ html.intro-on main {
   white-space: nowrap;
 }
 
-/* The DG dot mark is a mask so it takes the current text colour in either look. */
+/* The DG mark is a mask so it takes the current text colour in either look. */
 .mark {
-  width: 31px;
   height: 20px;
+  aspect-ratio: 272 / 108;
   flex: none;
   background: var(--fg);
   mask: url('./assets/dg.svg') center / contain no-repeat;
@@ -663,7 +663,7 @@ main {
 
 .scr-mark {
   width: 76%;
-  aspect-ratio: 11 / 7;
+  aspect-ratio: 272 / 108;
   background: var(--screen-led);
   mask: url('./assets/dg.svg') center / contain no-repeat;
 }

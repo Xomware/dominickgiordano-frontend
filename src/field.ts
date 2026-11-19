@@ -1,5 +1,6 @@
 import { type Board, INTRO_END, OFF, UNLOCK, drawBoard, layoutBoard, lockCenter, panelsCenter, phaseAt } from './board';
 import { bitmap } from './font';
+import { MARK_ASPECT, drawMark } from './mark';
 
 // A full-screen dot matrix behind the page. Each section names a pattern with data-pat, and the field blends
 // between the pattern under the middle of the viewport and the next one. Anything marked data-quiet dims the dots
@@ -72,19 +73,8 @@ function monogram(): Float32Array {
   if (!g) throw new Error('2D canvas unavailable');
   g.canvas.width = cols;
   g.canvas.height = rows;
-  const font = (px: number) => `800 ${px}px Geist, system-ui, sans-serif`;
-  let px = rows * (wide ? 0.6 : 0.34);
-  g.font = font(px);
-  const maxW = cols * (wide ? 0.44 : 0.8);
-  const w = g.measureText('DG').width;
-  if (w > maxW) {
-    px *= maxW / w;
-    g.font = font(px);
-  }
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.fillStyle = '#fff';
-  g.fillText('DG', cols * (wide ? 0.73 : 0.5), rows * (wide ? 0.54 : 0.72));
+  const w = Math.min(cols * (wide ? 0.44 : 0.8), rows * (wide ? 0.42 : 0.24) * MARK_ASPECT);
+  drawMark(g, cols * (wide ? 0.73 : 0.5), rows * (wide ? 0.54 : 0.72), w);
   const data = g.getImageData(0, 0, cols, rows).data;
   const m = new Float32Array(cols * rows);
   for (let i = 0; i < m.length; i++) m[i] = data[i * 4 + 3] / 255;
