@@ -84,3 +84,11 @@ test('reduced motion lists every Xomware app', async ({ page }) => {
   await expect(page.locator('#apps .slot')).toHaveCount(0);
   for (const app of await page.locator('#apps .app').all()) await expect(app).toBeVisible();
 });
+
+test('emails stay out of the page until the Email button is clicked', async ({ page }) => {
+  await page.goto('/');
+  expect(await page.content()).not.toMatch(/[\w.]+@[\w-]+\.\w+/);
+  await page.locator('[data-mail]').click();
+  await expect(page.locator('#mail a')).toHaveCount(2);
+  await expect(page.locator('#mail a').first()).toHaveAttribute('href', /^mailto:\S+@\S+\.\w+$/);
+});
