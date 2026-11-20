@@ -1,12 +1,12 @@
-// The Xomware grid shows a few apps at a time and flips one slot to its next app every few seconds, like the
-// departure board. Every card stays in index.html for crawlers; this only regroups them into stacked slots. Each
+// The Xomware grid shows a few apps at a time and dissolves one slot to its next app every few seconds, in LED
+// dots. Every card stays in index.html for crawlers; this only regroups them into stacked slots. Each
 // slot is sized by the tallest card in its stack, so a flip never moves the page.
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const narrow = matchMedia('(max-width: 560px)');
 const TICK = 2600;
-// Longer than the flip-in's delay plus duration in styles.css.
-const FLIP = 800;
+// Longer than dots-on's delay plus duration in styles.css.
+const SWAP = 1100;
 
 export function startShuffle(grid: HTMLElement): void {
   const cards = [...grid.querySelectorAll<HTMLElement>('.app')];
@@ -75,11 +75,11 @@ export function startShuffle(grid: HTMLElement): void {
     stack.push(stack.shift() as HTMLElement);
     show(out, false);
     show(next, true);
-    out.classList.add('leaving');
-    next.classList.add('entering');
+    out.classList.replace('settled', 'leaving') || out.classList.add('leaving');
+    next.classList.replace('settled', 'entering') || next.classList.add('entering');
     setTimeout(() => {
-      out.classList.remove('leaving');
-      next.classList.remove('entering');
-    }, FLIP);
+      out.classList.replace('leaving', 'settled');
+      next.classList.replace('entering', 'settled');
+    }, SWAP);
   }, TICK);
 }
