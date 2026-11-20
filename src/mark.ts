@@ -9,13 +9,13 @@ const stroke = Number(path.getAttribute('stroke-width'));
 
 export const MARK_ASPECT = W / H;
 
-/** Draws the DG mark in white, `w` wide and centred on (x, y). */
-export function drawMark(g: CanvasRenderingContext2D, x: number, y: number, w: number): void {
+/** Draws the DG mark in white, `w` wide and centred on (x, y); `weight` thickens the stroke for coarse rasters. */
+export function drawMark(g: CanvasRenderingContext2D, x: number, y: number, w: number, weight = 1): void {
   const s = w / W;
   g.save();
   g.translate(x - w / 2, y - (H * s) / 2);
   g.scale(s, s);
-  g.lineWidth = stroke;
+  g.lineWidth = stroke * weight;
   g.miterLimit = 10;
   g.strokeStyle = '#fff';
   g.stroke(shape);
