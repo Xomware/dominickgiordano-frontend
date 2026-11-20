@@ -466,6 +466,35 @@ a.pin:hover {
   max-width: 720px;
 }
 
+.mail {
+  display: grid;
+  gap: 10px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mail li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+
+.mail span {
+  min-width: 10ch;
+  color: var(--dim);
+  font: 500 12px/1.4 var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mail a {
+  color: var(--fg);
+  font-size: clamp(16px, 2.4vw, 20px);
+  overflow-wrap: anywhere;
+}
+
 main {
   position: relative;
   z-index: 1;
