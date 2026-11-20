@@ -871,6 +871,87 @@ main {
   margin-top: 2px;
 }
 
+/* src/shuffle.ts regroups the apps into slots that each stack several cards and show one. */
+.grid.shuffling {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.slot {
+  display: grid;
+  perspective: 900px;
+}
+
+.slot > .app {
+  grid-area: 1 / 1;
+}
+
+.slot > .app:not(.on) {
+  visibility: hidden;
+}
+
+.panel .slot > .app.leaving {
+  visibility: visible;
+  animation: flip-out 0.4s ease-in forwards;
+}
+
+.panel .slot > .app.entering {
+  animation: flip-in 0.45s 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+@keyframes flip-out {
+  to {
+    opacity: 0;
+    transform: rotateX(-75deg);
+  }
+}
+
+@keyframes flip-in {
+  from {
+    opacity: 0;
+    transform: rotateX(75deg);
+  }
+}
+
+.shuffle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  font: 500 11px/1.2 var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.shuffle button {
+  padding: 7px 14px;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--fg);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.shuffle button:hover {
+  border-color: var(--fg);
+}
+
+@media (max-width: 1180px) {
+  .grid.shuffling {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .grid.shuffling {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* ---------- experience ---------- */
 .two {
   display: grid;
