@@ -878,7 +878,6 @@ main {
 
 .slot {
   display: grid;
-  perspective: 900px;
 }
 
 .slot > .app {
@@ -889,26 +888,52 @@ main {
   visibility: hidden;
 }
 
+/* A swap shows each card through a 6px dot grid: the old card's dots shrink to nothing, then the next card's grow
+   back, like LED pixels switching. At 4.4px the dots overlap and cover the whole tile; at -1px even the
+   anti-aliased edge is gone, where 0px still left a faint ghost of the old card. */
+@property --r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 4.4px;
+}
+
+.panel .slot > .app.leaving,
+.panel .slot > .app.entering {
+  -webkit-mask: radial-gradient(circle, #000 var(--r), transparent calc(var(--r) + 0.6px)) 0 0 / 6px 6px;
+  mask: radial-gradient(circle, #000 var(--r), transparent calc(var(--r) + 0.6px)) 0 0 / 6px 6px;
+}
+
 .panel .slot > .app.leaving {
   visibility: visible;
-  animation: flip-out 0.4s ease-in forwards;
+  animation: dots-off 0.5s ease-in forwards;
 }
 
 .panel .slot > .app.entering {
-  animation: flip-in 0.45s 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation: dots-on 0.6s 0.4s ease-out both;
 }
 
-@keyframes flip-out {
+/* Once a card has swapped, dropping .entering must not hand it back to the entrance rise, which replayed it. */
+.panel .slot > .app.settled {
+  animation: none;
+}
+
+@keyframes dots-off {
+  from {
+    --r: 4.4px;
+  }
+
   to {
-    opacity: 0;
-    transform: rotateX(-75deg);
+    --r: -1px;
   }
 }
 
-@keyframes flip-in {
+@keyframes dots-on {
   from {
-    opacity: 0;
-    transform: rotateX(75deg);
+    --r: -1px;
+  }
+
+  to {
+    --r: 4.4px;
   }
 }
 
