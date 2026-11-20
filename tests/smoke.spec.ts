@@ -60,3 +60,27 @@ test('the look switch persists across reloads', async ({ page }) => {
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-look', 'light');
 });
+
+test('the Xomware grid shows four apps at a time, flips them over, and pauses', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Skip intro' }).click();
+  const grid = page.locator('#apps .grid');
+  await grid.scrollIntoViewIfNeeded();
+  const shown = grid.locator('.app.on');
+  await expect(shown).toHaveCount(4);
+  expect(await grid.locator('.app').count()).toBeGreaterThan(4);
+  const names = async () => (await shown.locator('b').allTextContents()).join();
+  const before = await names();
+  await expect.poll(names, { timeout: 6000 }).not.toBe(before);
+  await page.getByRole('button', { name: 'Pause' }).click();
+  const paused = await names();
+  await page.waitForTimeout(3200);
+  expect(await names()).toBe(paused);
+});
+
+test('reduced motion lists every Xomware app', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await expect(page.locator('#apps .slot')).toHaveCount(0);
+  for (const app of await page.locator('#apps .app').all()) await expect(app).toBeVisible();
+});

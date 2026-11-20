@@ -4,6 +4,7 @@ import { initReveal } from './effects';
 import { startField } from './field';
 import { initIntro } from './intro';
 import { initLook, initScrollSpy } from './nav';
+import { startShuffle } from './shuffle';
 import { startTicker } from './ticker';
 
 initLook();
@@ -13,3 +14,4 @@ initIntro();
 initReveal();
 startTicker(document.querySelector('.ticker') as HTMLElement);
 startDisplay(document.querySelector('.scr') as HTMLElement);
+startShuffle(document.querySelector('#apps .grid') as HTMLElement);
