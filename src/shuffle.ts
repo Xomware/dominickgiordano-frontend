@@ -4,7 +4,7 @@
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const narrow = matchMedia('(max-width: 560px)');
-const TICK = 2600;
+const TICK = 1500;
 // Longer than dots-on's delay plus duration in styles.css.
 const SWAP = 1100;
 
