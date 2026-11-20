@@ -73,9 +73,9 @@ function monogram(): Float32Array {
   if (!g) throw new Error('2D canvas unavailable');
   g.canvas.width = cols;
   g.canvas.height = rows;
-  const w = Math.min(cols * (wide ? 0.46 : 0.92), rows * (wide ? 0.5 : 0.3) * MARK_ASPECT);
+  const w = Math.min(cols * (wide ? 0.4 : 0.92), rows * (wide ? 0.5 : 0.3) * MARK_ASPECT);
   // At one pixel per dot the logo's stroke is only two or three dots thick, which reads as noise; fatten it.
-  drawMark(g, cols * (wide ? 0.74 : 0.5), rows * (wide ? 0.52 : 0.27), w, 1.3);
+  drawMark(g, cols * (wide ? 0.72 : 0.5), rows * (wide ? 0.52 : 0.27), w, 1.6);
   const data = g.getImageData(0, 0, cols, rows).data;
   const m = new Float32Array(cols * rows);
   for (let i = 0; i < m.length; i++) m[i] = data[i * 4 + 3] / 255;
@@ -150,12 +150,12 @@ export function endIntro(): void {
 function pattern(p: string, c: number, r: number, x: number, y: number, t: number, i: number): number {
   if (p === 'mono') {
     if (!mask[i]) return 0;
-    // A wave rolls along the mark and a bright glint sweeps it every few seconds, with a few dots twinkling.
-    const d = (c + r * 0.6) / (cols + rows * 0.6);
-    const sweep = d - (((t * 0.36) % 1.4) - 0.2);
-    const glint = Math.exp(-(sweep * sweep) / 0.003);
-    const twinkle = noise[i] > 0.95 ? Math.max(0, Math.sin(t * 2.5 + noise[i] * 400)) : 0;
-    return mask[i] * (0.64 + 0.22 * Math.sin(d * 18 - t * 2.6) + glint + 0.4 * twinkle);
+    // The mark holds near full brightness so it reads; a soft dark band rolls across it every few seconds and a
+    // few dots twinkle, which keeps it moving without washing it out.
+    const d = (c + r * 0.6) / (cols + rows * 0.6) - (((t * 0.3) % 1.6) - 0.3);
+    const dip = Math.exp(-(d * d) / 0.006);
+    const twinkle = noise[i] > 0.94 ? Math.max(0, Math.sin(t * 2.5 + noise[i] * 400)) : 0;
+    return mask[i] * (1 - 0.45 * dip + 0.3 * twinkle);
   }
   if (p === 'ripple') {
     const d = Math.hypot(x - W * (wide ? 0.7 : 0.5), y - H * 0.55);
