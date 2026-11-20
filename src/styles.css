@@ -469,20 +469,33 @@ a.pin:hover {
 .mail {
   display: grid;
   gap: 10px;
-  margin: 28px 0 0;
-  padding: 0;
+  margin: 24px 0 0;
+  padding: 16px 18px;
   list-style: none;
+  max-width: 520px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
 }
 
 .mail li {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 10ch minmax(0, 1fr) auto;
   align-items: baseline;
   gap: 4px 14px;
 }
 
+@media (max-width: 560px) {
+  .mail li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .mail li span {
+    grid-column: 1 / -1;
+  }
+}
+
 .mail span {
-  min-width: 10ch;
   color: var(--dim);
   font: 500 12px/1.4 var(--f-mono);
   letter-spacing: 0.06em;
@@ -606,6 +619,14 @@ main {
 
 .btn:hover {
   border-color: var(--fg);
+}
+
+.mail[hidden] {
+  display: none;
+}
+
+button.btn {
+  cursor: pointer;
 }
 
 .btn.primary {
@@ -1085,4 +1106,11 @@ main {
     animation: none !important;
     transition: none !important;
   }
+}
+
+.mail .linkbtn {
+  color: var(--dim);
+  font: 500 12px/1.4 var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
