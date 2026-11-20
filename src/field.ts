@@ -10,7 +10,7 @@ const root = document.documentElement;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const TICKERS: Record<string, number[]> = {
   lumist: bitmap('LUMIST LABS · LUMIOS · VECTOR · BEACON · LUMILEARN · BD PULSE · '),
-  apps: bitmap('XOMIFY · XOMPER · XOMFIT · XOMCLOUD · XOM APPETIT · XOM FORMS · ARMCHAIR JUDGE · CLT DYNASTY · '),
+  apps: bitmap('XOMIFY · XOMPER · XOMFIT · XOMCLOUD · XOM APPETIT · ARMCHAIR JUDGE · CLT DYNASTY · '),
 };
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
